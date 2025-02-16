@@ -69,14 +69,26 @@ TreeItem *TreeItem::parentItem()
 }
 """
 
-from typing import Any
+from typing import Any, Mapping
 
 
 class TreeItem:
-    def __init__(self, data: list, parent_item: "TreeItem" = None) -> None:
-        self._child_items: list["TreeItem"] = []
-        self._item_data: list = data
+    def __init__(
+        self, data: Mapping[str, Any] = None, parent_item: "TreeItem" = None
+    ) -> None:
         self._parent_item: "TreeItem" = parent_item
+        self._item_data: list = []
+        self._child_items: list["TreeItem"] = []
+
+        if data is None:
+            return
+
+        self._item_data = [data["title"], data["description"]]
+
+        if "items" in data:
+            self._child_items: list["TreeItem"] = [
+                TreeItem(it, self) for it in data["items"]
+            ]
 
     def append_child(self, child: "TreeItem") -> None:
         self._child_items.append(child)
@@ -88,19 +100,19 @@ class TreeItem:
     def child_count(self) -> int:
         return len(self._child_items)
 
-    def column_count(self) -> int:
-        return len(self._item_data)
-
-    def data(self, column: int) -> Any:
-        if 0 <= column < self.column_count():
-            return self._item_data[column]
-
     def row(self) -> int:
         return (
             0
             if self._parent_item is None
             else self._parent_item._child_items.index(self)
         )
+
+    def column_count(self) -> int:
+        return len(self._item_data)
+
+    def data(self, column: int) -> Any:
+        if 0 <= column < self.column_count():
+            return self._item_data[column]
 
     def parent_item(self) -> "TreeItem | None":
         return self._parent_item
