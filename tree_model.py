@@ -137,12 +137,11 @@ class TreeModel(QAbstractItemModel):
         if not index.isValid():
             return QModelIndex()
 
-        child_item = index.internalPointer()
-        parent_item = child_item.parent()
+        parent_item = index.internalPointer().parent()
 
-        if parent_item is self.root_item:
-            return QModelIndex()
-        return self.createIndex(parent_item.row(), 0, parent_item)
+        if parent_item not in (self.root_item, None):
+            return self.createIndex(parent_item.row(), 0, parent_item)
+        return QModelIndex()
 
     def rowCount(self, parent: QModelIndex = None) -> int:
         if parent.column() > 0:
@@ -156,7 +155,7 @@ class TreeModel(QAbstractItemModel):
             return parent.internalPointer().column_count()
         return 2
 
-    def data(self, index: QModelIndex, role: int) -> Any:
+    def data(self, index: QModelIndex, role: int = Qt.ItemDataRole.DisplayRole) -> Any:
         if index.isValid() and role == Qt.ItemDataRole.DisplayRole:
             return index.internalPointer().data(index.column())
 
@@ -165,7 +164,12 @@ class TreeModel(QAbstractItemModel):
             return QAbstractItemModel.flags(self, index)
         return Qt.ItemFlag.NoItemFlags
 
-    def headerData(self, section: int, orientation: Qt.Orientation, role: int) -> Any:
+    def headerData(
+        self,
+        section: int,
+        orientation: Qt.Orientation,
+        role: int = Qt.ItemDataRole.DisplayRole,
+    ) -> Any:
         if (
             orientation == Qt.Orientation.Horizontal
             and role == Qt.ItemDataRole.DisplayRole
