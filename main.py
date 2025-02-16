@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 
 import yaml
 from PySide6.QtWidgets import (
@@ -29,7 +28,7 @@ class AppDemo(QMainWindow):
         model = TreeModel(data)
 
         # Create QTreeView and set the model
-        tree_view = QTreeView(self)
+        tree_view = QTreeView()
         tree_view.setModel(model)
         layout.addWidget(tree_view)
 
