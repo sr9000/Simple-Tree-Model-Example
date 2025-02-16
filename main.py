@@ -14,7 +14,7 @@ from tree_model import TreeModel
 
 class AppDemo(QMainWindow):
     def __init__(self, yaml_filename: str):
-        super(AppDemo, self).__init__()
+        super().__init__()
 
         self.central_widget = QWidget()
         self.setCentralWidget(self.central_widget)
